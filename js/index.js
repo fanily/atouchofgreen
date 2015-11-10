@@ -17,14 +17,27 @@ jQuery(function($){
 	}
 
 	var get_fanily_post = function(keyword, callback) {
-		$.ajax({
-			url : "https://www.fanily.tw/search/lists/"+keyword,
-			type : "get",
-			dataType : "text",
-		}).done(function(data){
-			 callback(data);
-		});
-	};
+			$.ajax({
+				url : "https://www.fanily.tw/search/lists/"+keyword,
+				type : "get",
+				dataType : "text",
+			}).done(function(data){
+				 callback(data);
+			});
+		}
+		, loadImage = function (el, fn) {
+			var img = new Image()
+			  , src = el.getAttribute('data-src');
+			fn = fn || function(){};
+			img.onload = function() {
+				if (!! el.parent)
+					el.parent.replaceChild(img, el)
+			  	else
+			    	el.src = src;
+			  	fn();
+			}
+			img.src = src;
+		};
 
 	var keywords = ['一把青深度議題','一把青人物專訪','一把青新聞花絮','一把青活動直擊','眼裡的187'];
 	$.each(keywords, function(k, v){
@@ -64,6 +77,7 @@ jQuery(function($){
 		temp = JSON.parse(data);
 		var n = 0
 			, html = '';
+
 		for( $this in temp ){
 			if (n >= 8) {
 				break;
@@ -77,7 +91,7 @@ jQuery(function($){
 			}
 			v.post_date = moment.unix(v.post_date).format('YYYY-MM-DD');
 
-			html += '<div class="post-block">';
+			html += '<div class="post-block grid-item">';
 			html += '<a href="https://www.fanily.tw/post/'+v.id+'" target="_blank">';
 			html += '<img class="banner" src="'+v.post_image+'">';
 			html += '<div class="author"><img src="'+v.author.avatar+'"/>';
@@ -85,10 +99,20 @@ jQuery(function($){
 			html += '<span class="title">'+v.post_title+'</span>';
 			html += '<span class="date">'+v.post_date+'</span>';
 			html += '</a></div>';
+
 			n++;
 		}
 		$('#fanily-content').html(html);
 	});
+
+  setInterval(function(){
+    if ($(window).scrollTop() >= $('#fanily-wall').offset().top) {
+	  	$('#fanily-content').masonry({
+  			"itemSelector": '.post-block'
+  		});
+  	}
+  } , 10);
+
 
 	if ($.browser === 'mobile') {
 		$('#background-video').hide();
