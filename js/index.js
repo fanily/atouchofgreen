@@ -39,7 +39,7 @@ jQuery(function($){
 			img.src = src;
 		};
 
-	var keywords = ['一把青深度議題','一把青人物專訪','一把青新聞花絮','一把青活動直擊','眼裡的187'];
+	var keywords = ['一把青專題報導','一把青人物專訪','一把青新聞花絮','一把青活動直擊','眼裡的187'];
 	$.each(keywords, function(k, v){
 		get_fanily_post(v, function(data){
 			temp = JSON.parse(data);
