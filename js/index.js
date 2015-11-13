@@ -270,31 +270,49 @@ jQuery(function($){
 			} );
 	} );
 
-	var gallery_count = $('#imageGallery a').length;
-	if (gallery_count <= 8) {
-		$('#imageGallery a').addClass('show');
-	} else {
-		$('#imageGallery a:lt(8)').addClass('show');
-		$('#imageGallery').after('<span class="show-more">更多劇照</span>');
-
-		var $gallery = $('#imageGallery a.show:first img');
-		var w = $gallery.width();
-		if (w == 0) {
-			w = 100;
+	$.getJSON("gallery.json", function(data) {
+		var html = '';
+		for (var i=data.length; i >= 1; i--) {
+			var key = i-1;
+			$.each(data[key], function(i,v) {
+				html += '<a href="/img/'+key+'/'+v.name+'" data-sub-html="'+v.desc+'">';
+				html += '<img src="/img/'+key+'/thumb/'+v.name+'">';
+				html += '</a>';
+			});
 		}
-		$('#gallerybody .show-more').css({
-			'display': 'inline-block',
-			'width': w,
-			'margin-top': (w - 50) / 2
-		}).click(function(e){
-			e.stopPropagation();
-			$(this).remove();
-			$('#imageGallery a').addClass('show');
-		});
-	}
+		$('#imageGallery').append(html);
 
-	$('#imageGallery').lightGallery({
-		thumbnail: true,
-		showThumbByDefault:true
+		$('#imageGallery').lightGallery({
+			thumbnail: true,
+			showThumbByDefault:true
+		});
+
+		var count = $('#imageGallery a').length;
+		if (count <= 8) {
+			$('#imageGallery a').addClass('show');
+		} else {
+			$('#imageGallery a:lt(8)').addClass('show');
+			$('#imageGallery').after('<span class="show-more">更多劇照</span>');
+
+			var $gallery = $('#imageGallery a.show:first img');
+			var w = $gallery.width();
+			if (w == 0) {
+				w = 100;
+			}
+			$('#gallerybody .show-more').css({
+				'display': 'inline-block',
+				'width': w,
+				'margin-top': (w - 50) / 2
+			}).click(function(e){
+				e.stopPropagation();
+				var offset = $('#imageGallery a.show').length;
+				offset += 8;
+
+				$('#imageGallery a:lt('+offset+')').addClass('show');
+				if (offset >= count) {
+					$(this).remove();
+				}
+			});
+		}
 	});
 });
