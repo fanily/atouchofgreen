@@ -115,7 +115,7 @@ jQuery(function($){
 
 
 	if ($.browser === 'mobile') {
-		$('#background-video').hide();
+		$('#background-video').remove();
 		$("#player").css("top" , ($(window).height() - $("#player").height())/2);
 
 		$(window).scroll(function () {
