@@ -105,13 +105,13 @@ jQuery(function($){
 		$('#fanily-content').html(html);
 	});
 
-  setInterval(function(){
-    if ($(window).scrollTop() >= $('#fanily-wall').offset().top) {
+	setInterval(function(){
+	if ($(window).scrollTop() >= $('#fanily-wall').offset().top) {
 	  	$('#fanily-content').masonry({
-  			"itemSelector": '.post-block'
-  		});
-  	}
-  } , 10);
+				"itemSelector": '.post-block'
+			});
+		}
+	} , 10);
 
 
 	if ($.browser === 'mobile') {
@@ -127,11 +127,8 @@ jQuery(function($){
 		});
 
 	}else{
-    $.getScript("/js/jquery.tubular.min.js?t=2")
-      .done(function() {
-        $('#background-video').tubular({videoId: 'odTBgVKdTto' , mute : false});
-        window.addEventListener('scroll', scroll_to_mute , false);
-      })
+		$('#background-video').tubular({videoId: 'odTBgVKdTto' , mute : false});
+		window.addEventListener('scroll', scroll_to_mute , false);
 	}
 
 	if ($.browser !== 'desktop') {
@@ -239,16 +236,16 @@ jQuery(function($){
 			, url = window.location.href;
 
 		if ($self.hasClass("fb")) {
-				window.open('https://www.facebook.com/share.php?u='+encodeURI(url), '_blank');
+			window.open('https://www.facebook.com/share.php?u='+encodeURI(url), '_blank');
 		}
 		if ($self.hasClass("plus")) {
-				window.open('https://plus.google.com/share?url=' + encodeURI(url), '_blank');
+			window.open('https://plus.google.com/share?url=' + encodeURI(url), '_blank');
 		}
 		if ($self.hasClass("weibo")) {
-				window.open('http://v.t.sina.com.cn/share/share.php?title='+title+'&url='+url, '_blank');
+			window.open('http://v.t.sina.com.cn/share/share.php?title='+title+'&url='+url, '_blank');
 		}
 		if ($self.hasClass("line")) {
-				window.open("http://line.naver.jp/R/msg/text/?"+url);
+			window.open("http://line.naver.jp/R/msg/text/?"+url);
 		}
 
 		$('.menu .share').click();
@@ -261,17 +258,73 @@ jQuery(function($){
 		$('.post-container .post-content').eq(index).addClass('current').find('.grid').masonry({
 			"itemSelector": '.grid-item'
 		});
+	}).on('click', '.episode-section .tab li', function(e){
+		var num = $(this).attr("data-value");
+		$('#episode-content').empty();
+		$(this).addClass('current');
+		$(this).siblings().removeClass('current');
+
+		var html = '<div class="episode" id="episodeGallery'+num+'" data-value="'+num+'">';
+		$.getJSON("episode.json", function(data) {
+			$.each(data[num], function(k, v){
+				html += '<a href="'+v.big+'">';
+				html += '<img src="'+v.thumb+'">';
+				html += '</a>';
+			});
+			html += '</div>';
+			$("#episode-content").append(html);
+			$('#episodeGallery'+num).lightGallery({
+				thumbnail:true,
+				showThumbByDefault:true
+			});
+		});
 	});
 
 	var clip = new ZeroClipboard( $(".share-ul li.copy") );
 	clip.on( 'ready', function(event) {
-			clip.on( 'copy', function(event) {
-				event.clipboardData.setData("text/plain", window.location.href);
-			} );
-			clip.on( 'aftercopy', function(event) {
-				alert('複製網址成功！');
-			} );
+		clip.on( 'copy', function(event) {
+			event.clipboardData.setData("text/plain", window.location.href);
+		} );
+		clip.on( 'aftercopy', function(event) {
+			alert('複製網址成功！');
+		} );
 	} );
+
+	$.getJSON("episode.json", function(data) {
+		var content_html = '';
+		var num = 1;
+		var next_num = 2;
+		var total = Object.keys(data).length - 1;
+
+		$.each(data, function(i,v) {
+			tab_html = '<li data-value="'+i+'"';
+			if (total == i) {
+				tab_html += ' class="current">';
+
+				content_html += '<div class="episode" id="episodeGallery'+i+'" data-value="'+i+'">';
+				$.each(v, function(key, pic){
+					content_html += '<a href="'+pic.big+'">';
+					content_html += '<img src="'+pic.thumb+'">';
+					content_html += '</a>';
+				});
+				content_html += '</div>';
+			} else {
+				tab_html += '>';
+			}
+
+			tab_html += 'EP'+num+'~'+next_num+'</li>';
+			num = num+2;
+			next_num = next_num+2;
+
+			$('#episodebody .tab').prepend(tab_html);
+		});
+
+		$("#episode-content").append(content_html);
+		$('#episodeGallery'+total).lightGallery({
+			thumbnail:true,
+			showThumbByDefault:true
+		});
+	});
 
 	$.getJSON("gallery.json", function(data) {
 		var html = '';
@@ -284,7 +337,6 @@ jQuery(function($){
 			});
 		}
 		$('#imageGallery').append(html);
-
 		$('#imageGallery').lightGallery({
 			thumbnail: true,
 			showThumbByDefault:true
@@ -317,5 +369,25 @@ jQuery(function($){
 				}
 			});
 		}
+	});
+
+  	//get video
+	$.getJSON("videos.json",function(data){
+		var html = "";
+		$.each(data, function(i,v){
+			var url = '';
+			if (v.url !== "") {
+				url = "http://live.fanily.tw/atouchofgreen-live/"+v.url;
+			} else {
+				url = "https://www.youtube.com/watch?v="+v.id;
+			}
+
+			html += '<div class="video-item"><a href="'+url+'" target="_blank" class="video-pic-link">';
+			html += '<i class="fa fa-play-circle"></i>';
+			html += '<img class="video-pic" src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg">';
+			html += '</a>';
+			html += '<a href="'+url+'" target="_blank"><span class="caption">'+v.title+'</span></div>';
+		});
+		$('.video-container').append(html);
 	});
 });
