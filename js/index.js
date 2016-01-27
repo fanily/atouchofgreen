@@ -127,8 +127,11 @@ jQuery(function($){
 		});
 
 	}else{
-		$('#background-video').tubular({videoId: 'odTBgVKdTto' , mute : false});
-		window.addEventListener('scroll', scroll_to_mute , false);
+    $.getScript("/js/jquery.tubular.min.js?t=2")
+      .done(function() {
+        $('#background-video').tubular({videoId: 'odTBgVKdTto' , mute : false});
+        window.addEventListener('scroll', scroll_to_mute , false);
+      });
 	}
 
 	if ($.browser !== 'desktop') {
