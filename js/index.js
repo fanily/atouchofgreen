@@ -18,7 +18,7 @@ jQuery(function($){
 
 	var get_fanily_post = function(keyword, callback) {
 			$.ajax({
-				url : "https://www.fanily.tw/search/lists/"+keyword,
+				url : "https://denny.fanily.tw/search/lists/"+keyword,
 				type : "get",
 				dataType : "text",
 			}).done(function(data){
@@ -300,7 +300,7 @@ jQuery(function($){
 		var total = Object.keys(data).length - 1;
 
 		$.each(data, function(i,v) {
-			tab_html = '<li data-value="'+i+'"';
+			tab_html = '<li data-value="'+i+'" class="episode-tab"';
 			if (total == i) {
 				tab_html += ' class="current">';
 
