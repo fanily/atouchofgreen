@@ -18,7 +18,7 @@ jQuery(function($){
 
 	var get_fanily_post = function(keyword, callback) {
 			$.ajax({
-				url : "https://denny.fanily.tw/search/lists/"+keyword,
+				url : "https://www.fanily.tw/search/lists/"+keyword,
 				type : "get",
 				dataType : "text",
 			}).done(function(data){
@@ -253,7 +253,7 @@ jQuery(function($){
 
 		$('.menu .share').click();
 	}).on('click', '.post-list .tab li', function(e){
-		var index = $('.tab li').index(this);
+		var index = $('.post-list .tab li').index(this);
 		$(this).siblings().removeClass('current');
 		$(this).addClass('current');
 
