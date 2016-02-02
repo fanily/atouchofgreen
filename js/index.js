@@ -300,9 +300,9 @@ jQuery(function($){
 		var total = Object.keys(data).length - 1;
 
 		$.each(data, function(i,v) {
-			tab_html = '<li data-value="'+i+'" class="episode-tab"';
+			tab_html = '<li data-value="'+i+'" class="episode-tab';
 			if (total == i) {
-				tab_html += ' class="current">';
+				tab_html += ' current">';
 
 				content_html += '<div class="episode" id="episodeGallery'+i+'" data-value="'+i+'">';
 				$.each(v, function(key, pic){
@@ -312,7 +312,7 @@ jQuery(function($){
 				});
 				content_html += '</div>';
 			} else {
-				tab_html += '>';
+				tab_html += '">';
 			}
 
 			tab_html += 'EP'+num+'~'+next_num+'</li>';
