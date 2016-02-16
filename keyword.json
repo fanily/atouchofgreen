@@ -1,0 +1,25 @@
+[{
+	"tab": "專題報導",
+	"keyword": "一把青專題報導",
+	"current": false
+},
+{
+	"tab": "人物專訪",
+	"keyword": "一把青人物專訪",
+	"current": true
+},
+{
+	"tab": "新聞花絮",
+	"keyword": "一把青新聞花絮",
+	"current": false
+},
+{
+	"tab": "活動直擊",
+	"keyword": "一把青活動直擊",
+	"current": false
+},
+{
+	"tab": "眼裡的187",
+	"keyword": "眼裡的187",
+	"current": false
+}]

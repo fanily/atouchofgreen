@@ -17,61 +17,116 @@ jQuery(function($){
 	}
 
 	var get_fanily_post = function(keyword, callback) {
-			$.ajax({
-				url : "https://www.fanily.tw/search/lists/"+keyword,
-				type : "get",
-				dataType : "text",
-			}).done(function(data){
-				 callback(data);
-			});
-		}
-		, loadImage = function (el, fn) {
-			var img = new Image()
-			  , src = el.getAttribute('data-src');
-			fn = fn || function(){};
-			img.onload = function() {
-				if (!! el.parent)
-					el.parent.replaceChild(img, el)
-			  	else
-			    	el.src = src;
-			  	fn();
-			}
-			img.src = src;
-		};
-
-	var keywords = ['一把青專題報導','一把青人物專訪','一把青新聞花絮','一把青活動直擊','眼裡的187'];
-	$.each(keywords, function(k, v){
-		get_fanily_post(v, function(data){
-			temp = JSON.parse(data);
-			 var html = '';
-			 if (temp.length == 0) {
-				html += '<p class="message">目前尚無文章，敬請期待！</p>';
-			 } else {
-				var n = 0;
-				html += '<div class="grid post-row">';
-				for( $this in temp ){
-					if (n >= 8) {
-						break;
-					}
-					var data = temp[$this];
-					if (data.post_image == '') {
-						data.post_image = 'https://www.fanily.tw/img/g_avatars.png';
-					}
-					html += '<div class="post-block grid-item">';
-					html += '<a href="https://www.fanily.tw/post/'+data.id+'" target="_blank">';
-					html += '<img src="'+data.post_image+'">';
-					html += '<span>'+data.post_title+'</span>';
-					html += '</a></div>';
-					n++;
-				}
-				html += '</div>';
-			}
-			$('#post-list .post-content:eq('+k+')').html(html);
+		$.ajax({
+			url : "https://www.fanily.tw/search/lists/"+keyword,
+			type : "get",
+			dataType : "text",
+		}).done(function(data){
+			 callback(data);
 		});
-		$('.post-container .current').find('.grid').masonry({
-			"itemSelector": '.grid-item'
+	};
+	var loadImage = function (el, fn) {
+		var img = new Image()
+		  , src = el.getAttribute('data-src');
+		fn = fn || function(){};
+		img.onload = function() {
+			if (!! el.parent)
+				el.parent.replaceChild(img, el)
+		  	else
+		    	el.src = src;
+		  	fn();
+		}
+		img.src = src;
+	};
+
+	$.getJSON("keyword.json",function(data){
+		$.each(data, function(k,v){
+			var tab_html = '<li>'+v.tab+'</li>';
+			var html = '<div class="post-content">';
+			if (v.current) {
+				tab_html = '<li class="current">'+v.tab+'</li>';
+				html = '<div class="post-content current">'
+			}
+
+			get_fanily_post(v.keyword, function(data){
+				temp = JSON.parse(data);
+				 if (temp.length == 0) {
+					html += '<p class="message">目前尚無文章，敬請期待！</p>';
+				 } else {
+				 	html += '<div class="grid post-row">';
+					var n = 0;
+					for( $this in temp ){
+						if (n >= 8) {
+							break;
+						}
+						var data = temp[$this];
+						if (data.post_image == '') {
+							data.post_image = 'https://www.fanily.tw/img/g_avatars.png';
+						}
+						html += '<div class="post-block grid-item">';
+						html += '<a href="https://www.fanily.tw/post/'+data.id+'" target="_blank">';
+						html += '<img src="'+data.post_image+'">';
+						html += '<span>'+data.post_title+'</span>';
+						html += '</a></div>';
+						n++;
+					}
+					html += '</div>';
+					html += '<a class="more" target="_blank" href="https://www.fanily.tw/search/tag/'+v.keyword+'">看更多'+v.tab+'</a>';
+				}
+
+				html += '</div>';
+				$('#post-list .tab').append(tab_html);
+				$('#post-list .post-container').append(html);
+				if (v.current) {
+					setTimeout(function() {
+						$('#post-list .post-container .current').find('.grid').masonry({
+							"itemSelector": '.grid-item'
+						});
+					}, 1000);
+				};
+			});
 		});
 	});
+	// $.each(keywords, function(k, v){
+	// 	get_fanily_post(v, function(data){
+	// 		temp = JSON.parse(data);
+	// 		 var html = '';
+	// 		 var $post_div = $('#post-list .post-container .post-content:eq('+k+')');
+
+	// 		 if (temp.length == 0) {
+	// 			html += '<p class="message">目前尚無文章，敬請期待！</p>';
+	// 		 } else {
+	// 		 	html += '<div class="grid post-row">';
+	// 			var n = 0;
+	// 			for( $this in temp ){
+	// 				if (n >= 8) {
+	// 					break;
+	// 				}
+	// 				var data = temp[$this];
+	// 				if (data.post_image == '') {
+	// 					data.post_image = 'https://www.fanily.tw/img/g_avatars.png';
+	// 				}
+	// 				html += '<div class="post-block grid-item">';
+	// 				html += '<a href="https://www.fanily.tw/post/'+data.id+'" target="_blank">';
+	// 				html += '<img src="'+data.post_image+'">';
+	// 				html += '<span>'+data.post_title+'</span>';
+	// 				html += '</a></div>';
+	// 				n++;
+	// 			}
+	// 			html += '</div>';
+	// 			html += '<a class="more" target="_blank" href="https://www.fanily.tw/search/tag/'+v+'">看更多'+v+'</a>';
+	// 		}
+
+	// 		$post_div.append(html);
+	// 		if ($post_div.hasClass('current')) {
+	// 			setTimeout(function() {
+	// 				$post_div.find('.grid').masonry({
+	// 					"itemSelector": '.grid-item'
+	// 				});
+	// 			}, 1000);
+	// 		}
+	// 	});
+	// });
 
 	get_fanily_post('一把青', function(data){
 		temp = JSON.parse(data);
@@ -102,17 +157,13 @@ jQuery(function($){
 
 			n++;
 		}
-		$('#fanily-content').html(html);
-	});
-
-	setInterval(function(){
-	if ($(window).scrollTop() >= $('#fanily-wall').offset().top) {
-	  	$('#fanily-content').masonry({
+		$('#fanily-content').append(html);
+		setTimeout(function() {
+			$('#fanily-content').masonry({
 				"itemSelector": '.post-block'
 			});
-		}
-	} , 10);
-
+		}, 1000);
+	});
 
 	if ($.browser === 'mobile') {
 		$('#background-video').remove();
@@ -127,11 +178,10 @@ jQuery(function($){
 		});
 
 	}else{
-    $.getScript("/js/jquery.tubular.min.js?t=2")
-      .done(function() {
-        $('#background-video').tubular({videoId: 'odTBgVKdTto' , mute : false});
-        window.addEventListener('scroll', scroll_to_mute , false);
-      });
+    	$.getScript("/js/jquery.tubular.min.js?t=2").done(function() {
+			$('#background-video').tubular({videoId: 'odTBgVKdTto' , mute : false});
+			window.addEventListener('scroll', scroll_to_mute , false);
+		});
 	}
 
 	if ($.browser !== 'desktop') {
@@ -278,7 +328,8 @@ jQuery(function($){
 			$("#episode-content").append(html);
 			$('#episodeGallery'+num).lightGallery({
 				thumbnail:true,
-				showThumbByDefault:true
+				showThumbByDefault:true,
+        		download:false
 			});
 		});
 	});
@@ -293,6 +344,7 @@ jQuery(function($){
 		} );
 	} );
 
+	//get episode
 	$.getJSON("episode.json", function(data) {
 		var content_html = '';
 		var num = 1;
@@ -325,10 +377,12 @@ jQuery(function($){
 		$("#episode-content").append(content_html);
 		$('#episodeGallery'+total).lightGallery({
 			thumbnail:true,
-			showThumbByDefault:true
+			showThumbByDefault:true,
+      		download:false
 		});
 	});
 
+	//get gallery
 	$.getJSON("gallery.json", function(data) {
 		var html = '';
 		for (var i=data.length; i >= 1; i--) {
@@ -342,7 +396,8 @@ jQuery(function($){
 		$('#imageGallery').append(html);
 		$('#imageGallery').lightGallery({
 			thumbnail: true,
-			showThumbByDefault:true
+			showThumbByDefault:true,
+     		download:false
 		});
 
 		var count = $('#imageGallery a').length;
@@ -378,18 +433,28 @@ jQuery(function($){
 	$.getJSON("videos.json",function(data){
 		var html = "";
 		$.each(data, function(i,v){
-			var url = '';
+			var url = "https://www.youtube.com/watch?v="+v.id;
+			var post_url = "https://www.youtube.com/watch?v="+v.id;
+
 			if (v.url !== "") {
 				url = "http://live.fanily.tw/atouchofgreen-live/"+v.url;
-			} else {
-				url = "https://www.youtube.com/watch?v="+v.id;
+			}
+			if (v.post_id !== "") {
+				post_url = "https://www.fanily.tw/post/"+v.post_id;
 			}
 
-			html += '<div class="video-item"><a href="'+url+'" target="_blank" class="video-pic-link">';
+			html += '<div class="video-item">';
+			html += '<a href="'+url+'" target="_blank" class="video-pic-link">';
 			html += '<i class="fa fa-play-circle"></i>';
 			html += '<img class="video-pic" src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg">';
 			html += '</a>';
-			html += '<a href="'+url+'" target="_blank"><span class="caption">'+v.title+'</span></div>';
+			html += '<a href="'+post_url+'" target="_blank">';
+			html += '<span class="caption">';
+			if(v.post_id !== "") {
+				html += '<i class="fa fa-paper-plane"></i>';
+			}
+			html += v.title+'</span>';
+			html += '</a></div>';
 		});
 		$('.video-container').append(html);
 	});
