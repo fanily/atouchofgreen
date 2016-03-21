@@ -87,47 +87,7 @@ jQuery(function($){
 			});
 		});
 	});
-	// $.each(keywords, function(k, v){
-	// 	get_fanily_post(v, function(data){
-	// 		temp = JSON.parse(data);
-	// 		 var html = '';
-	// 		 var $post_div = $('#post-list .post-container .post-content:eq('+k+')');
-
-	// 		 if (temp.length == 0) {
-	// 			html += '<p class="message">目前尚無文章，敬請期待！</p>';
-	// 		 } else {
-	// 		 	html += '<div class="grid post-row">';
-	// 			var n = 0;
-	// 			for( $this in temp ){
-	// 				if (n >= 8) {
-	// 					break;
-	// 				}
-	// 				var data = temp[$this];
-	// 				if (data.post_image == '') {
-	// 					data.post_image = 'https://www.fanily.tw/img/g_avatars.png';
-	// 				}
-	// 				html += '<div class="post-block grid-item">';
-	// 				html += '<a href="https://www.fanily.tw/post/'+data.id+'" target="_blank">';
-	// 				html += '<img src="'+data.post_image+'">';
-	// 				html += '<span>'+data.post_title+'</span>';
-	// 				html += '</a></div>';
-	// 				n++;
-	// 			}
-	// 			html += '</div>';
-	// 			html += '<a class="more" target="_blank" href="https://www.fanily.tw/search/tag/'+v+'">看更多'+v+'</a>';
-	// 		}
-
-	// 		$post_div.append(html);
-	// 		if ($post_div.hasClass('current')) {
-	// 			setTimeout(function() {
-	// 				$post_div.find('.grid').masonry({
-	// 					"itemSelector": '.grid-item'
-	// 				});
-	// 			}, 1000);
-	// 		}
-	// 	});
-	// });
-
+	
 	get_fanily_post('一把青', function(data){
 		temp = JSON.parse(data);
 		var n = 0
