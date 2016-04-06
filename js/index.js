@@ -18,7 +18,7 @@ jQuery(function($){
 
 	var get_fanily_post = function(keyword, callback) {
 		$.ajax({
-			url : "https://www.fanily.tw/search/lists/"+keyword,
+			url : "https://denny.fanily.tw/search/lists/"+keyword,
 			type : "get",
 			dataType : "text",
 		}).done(function(data){
@@ -87,7 +87,7 @@ jQuery(function($){
 			});
 		});
 	});
-	
+
 	get_fanily_post('一把青', function(data){
 		temp = JSON.parse(data);
 		var n = 0
@@ -185,7 +185,7 @@ jQuery(function($){
 		}
 	}).on('click', '.mobile-link-ul a', function(e){
 		ga("atouchofgreen.send", "event", "menu", "click", "activity-"+$(this).attr('href'));
-		
+
 	}).on('click', '.mobile-menu', function(e){
 		var toggled = $(this).data('toggled');
 		$(this).data('toggled', !toggled);
@@ -353,7 +353,12 @@ jQuery(function($){
 				tab_html += '">';
 			}
 
-			tab_html += 'EP'+num+'~'+next_num+'</li>';
+      if (num == 31) {
+        tab_html += 'EP'+num+'</li>';
+      }
+      else {
+        tab_html += 'EP'+num+'~'+next_num+'</li>';
+      }
 			num = num+2;
 			next_num = next_num+2;
 
