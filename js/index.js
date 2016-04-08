@@ -40,51 +40,122 @@ jQuery(function($){
 	};
 
 	$.getJSON("keyword.json",function(data){
+		var tabHtml = '';
+		var postHtml = '';
 		$.each(data, function(k,v){
-			var tab_html = '<li>'+v.tab+'</li>';
-			var html = '<div class="post-content">';
 			if (v.current) {
-				tab_html = '<li class="current">'+v.tab+'</li>';
-				html = '<div class="post-content current">'
+				tabHtml += '<li class="current">'+v.tab+'</li>';
+				postHtml += '<div class="post-content current"></div>'
+			} else {
+				tabHtml += '<li>'+v.tab+'</li>';
+				postHtml += '<div class="post-content"></div>';
 			}
+		});
+		$('#post-list .tab').append(tabHtml);
+		$('#post-list .post-container').append(postHtml);
 
-			get_fanily_post(v.keyword, function(data){
-				temp = JSON.parse(data);
-				 if (temp.length == 0) {
-					html += '<p class="message">目前尚無文章，敬請期待！</p>';
-				 } else {
-				 	html += '<div class="grid post-row">';
-					var n = 0;
-					for( $this in temp ){
-						if (n >= 8) {
-							break;
+		$.each(data, function(index, v){
+			if (v.keyword === "眼裡的187") {
+				var count = 0;
+				var offset = 0;
+				var getPost = function(offset, index) {
+					$.ajax({
+						url : "https://www.fanily.tw/group/getPostList",
+						type : "post",
+						async: false,
+						dataType : "text",
+						data : {
+							slug : "aTouchofGreen",
+							offset : offset
 						}
-						var data = temp[$this];
-						if (data.post_image == '') {
-							data.post_image = 'https://www.fanily.tw/img/g_avatars.png';
+					}).done(function(data){
+						temp = JSON.parse(data);
+						if (temp.length === 0) {
+							var html = '<p class="message">目前尚無文章，敬請期待！</p>';
+					 		$('#post-list .post-content:eq('+index+') .post-row').append(html);
+						} else {
+							if (offset === 0) {
+								var layoutHtml = '<div class="grid post-row"></div>';
+								layoutHtml += '<a class="more" target="_blank" href="https://www.fanily.tw/search/tag/'+v.keyword+'">看更多'+v.tab+'</a>';
+								$('#post-list .post-content:eq('+index+')').append(layoutHtml);
+							}
+							var offical_author = ['11e5247d06a297469e58c061a61c97a3','11e524847ac4fb3a9e58c061a61c97a3'];
+							for ($this in temp) {
+								if (count >= 8) {
+									break;
+								}
+								var postData = temp[$this];
+								if (offical_author.indexOf(postData.author.id) !== -1) {
+									return ;
+								}
+								if (postData.date < 1459502280 || postData.date > 1460304000) {
+									return;
+								}
+								if (postData.image == '') {
+									postData.image = 'https://www.fanily.tw/img/g_avatars.png';
+								}
+								var html = '<div class="post-block grid-item">';
+								html += '<a href="https://www.fanily.tw/post/'+postData.id+'" target="_blank">';
+								html += '<img src="'+postData.image+'">';
+								html += '<span>'+postData.author.name+'@'+postData.title+'</span>';
+								html += '</a></div>';
+								$('#post-list .post-content:eq('+index+') .post-row').append(html);
+								count++;
+							}
+							offset += 20;
+							if (count < 8) {
+								getPost(offset, index);
+							} else {
+								if (v.current) {
+									setTimeout(function() {
+										$('#post-list .post-container .current').find('.grid').masonry({
+											"itemSelector": '.grid-item'
+										});
+									}, 1000);
+								};
+							}
 						}
-						html += '<div class="post-block grid-item">';
-						html += '<a href="https://www.fanily.tw/post/'+data.id+'" target="_blank">';
-						html += '<img src="'+data.post_image+'">';
-						html += '<span>'+data.post_title+'</span>';
-						html += '</a></div>';
-						n++;
-					}
-					html += '</div>';
-					html += '<a class="more" target="_blank" href="https://www.fanily.tw/search/tag/'+v.keyword+'">看更多'+v.tab+'</a>';
+					});
 				}
+				getPost(offset, index);
 
-				html += '</div>';
-				$('#post-list .tab').append(tab_html);
-				$('#post-list .post-container').append(html);
-				if (v.current) {
-					setTimeout(function() {
-						$('#post-list .post-container .current').find('.grid').masonry({
-							"itemSelector": '.grid-item'
-						});
-					}, 1000);
-				};
-			});
+			} else {
+				var html = '';
+				get_fanily_post(v.keyword, function(data){
+					temp = JSON.parse(data);
+					 if (temp.length == 0) {
+						html += '<p class="message">目前尚無文章，敬請期待！</p>';
+					 } else {
+					 	html += '<div class="grid post-row">';
+						var n = 0;
+						for( $this in temp ){
+							if (n >= 8) {
+								break;
+							}
+							var data = temp[$this];
+							if (data.post_image == '') {
+								data.post_image = 'https://www.fanily.tw/img/g_avatars.png';
+							}
+							html += '<div class="post-block grid-item">';
+							html += '<a href="https://www.fanily.tw/post/'+data.id+'" target="_blank">';
+							html += '<img src="'+data.post_image+'">';
+							html += '<span>'+data.post_title+'</span>';
+							html += '</a></div>';
+							n++;
+						}
+						html += '</div>';
+						html += '<a class="more" target="_blank" href="https://www.fanily.tw/search/tag/'+v.keyword+'">看更多'+v.tab+'</a>';
+					}
+					$('#post-list .post-content:eq('+index+')').append(html);
+					if (v.current) {
+						setTimeout(function() {
+							$('#post-list .post-container .current').find('.grid').masonry({
+								"itemSelector": '.grid-item'
+							});
+						}, 1000);
+					};
+				});
+			}
 		});
 	});
 
