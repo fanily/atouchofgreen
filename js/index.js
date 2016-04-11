@@ -86,10 +86,10 @@ jQuery(function($){
 								}
 								var postData = temp[$this];
 								if (offical_author.indexOf(postData.author.id) !== -1) {
-									return ;
+									// do nothing
 								}
 								if (postData.date < 1459502280 || postData.date > 1460304000) {
-									return;
+									// do nothing
 								}
 								if (postData.image == '') {
 									postData.image = 'https://www.fanily.tw/img/g_avatars.png';
