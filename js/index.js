@@ -59,6 +59,7 @@ jQuery(function($){
 				var count = 0;
 				var offset = 0;
 				var getPost = function(offset, index) {
+					var flag = false;
 					$.ajax({
 						url : "https://www.fanily.tw/group/getPostList",
 						type : "post",
@@ -82,28 +83,32 @@ jQuery(function($){
 							var offical_author = ['11e5247d06a297469e58c061a61c97a3','11e524847ac4fb3a9e58c061a61c97a3'];
 							for ($this in temp) {
 								if (count >= 8) {
+									flag = true;
 									break;
 								}
 								var postData = temp[$this];
-								if (offical_author.indexOf(postData.author.id) !== -1) {
-									// do nothing
+								if (postData.date < 1459502280) {
+									flag = true;
+									// 不要 1459502280 之前的文章
+									break;
 								}
-								if (postData.date < 1459502280 || postData.date > 1460304000) {
-									// do nothing
+
+								if (offical_author.indexOf(postData.author.id) === -1 && postData.date <= 1460304000) {
+									// 非 offical account && 1460304000 之前的文章
+									if (postData.image == '') {
+										postData.image = 'https://www.fanily.tw/img/g_avatars.png';
+									}
+									var html = '<div class="post-block grid-item">';
+									html += '<a href="https://www.fanily.tw/post/'+postData.id+'" target="_blank">';
+									html += '<img src="'+postData.image+'">';
+									html += '<span>'+postData.author.name+'@'+postData.title+'</span>';
+									html += '</a></div>';
+									$('#post-list .post-content:eq('+index+') .post-row').append(html);
+									count++;
 								}
-								if (postData.image == '') {
-									postData.image = 'https://www.fanily.tw/img/g_avatars.png';
-								}
-								var html = '<div class="post-block grid-item">';
-								html += '<a href="https://www.fanily.tw/post/'+postData.id+'" target="_blank">';
-								html += '<img src="'+postData.image+'">';
-								html += '<span>'+postData.author.name+'@'+postData.title+'</span>';
-								html += '</a></div>';
-								$('#post-list .post-content:eq('+index+') .post-row').append(html);
-								count++;
 							}
 							offset += 20;
-							if (count < 8) {
+							if (count < 8 && flag === false) {
 								getPost(offset, index);
 							} else {
 								if (v.current) {
