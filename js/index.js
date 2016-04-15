@@ -497,7 +497,7 @@ jQuery(function($){
 	});
 
   	//get video
-	$.getJSON("videos.json",function(data){
+	$.getJSON("videos.json?t=1460721762",function(data){
 		var html = "";
 		$.each(data, function(i,v){
 			var url = "https://www.youtube.com/watch?v="+v.id;
